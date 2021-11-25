@@ -3,7 +3,8 @@ getwd()
 # SET YOUR WORKING DIRECTORY
 setwd("/Users/elmeriniemi/Desktop/Programming/ECON_group")
 # SET YOUR WORKING DIRECTORY
-
+library(dplyr)
+library(ggplot2)
 #check that the filename is correct
 uspoll_fp <- "pollution_us_2000_2016.csv"
 
@@ -24,3 +25,8 @@ head(subset_uspoll)
 
 # Uncomment to create local csv
 #write.csv(subset_uspoll, "uspoll_onlymeans00-16.csv")
+arizona <- filter(subset_uspoll, subset_uspoll$Site.Num == 3002)
+dim(arizona)
+
+plot1 <-  ggplot(arizona, aes(x=Date.Local, y=NO2.Mean)) + geom_point()
+plot1
