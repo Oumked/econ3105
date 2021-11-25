@@ -21,3 +21,6 @@ subset_uspoll <- df_uspoll[c("State.Code", "County.Code", "Site.Num", "Address",
                             "NO2.Mean", "O3.Mean", "SO2.Mean", "CO.Mean")
                           ]
 head(subset_uspoll)
+
+# Uncomment to create local csv
+#write.csv(subset_uspoll, "uspoll_onlymeans00-16.csv")
