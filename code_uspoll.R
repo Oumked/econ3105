@@ -13,4 +13,11 @@ df_uspoll <- read.csv(uspoll_fp, sep = ",", header = 1)
 str(df_uspoll)
 head(df_uspoll)
 
-#test
+
+# Creating a subset for dataframe with only necessary columns
+
+subset_uspoll <- df_uspoll[c("State.Code", "County.Code", "Site.Num", "Address",
+                            "State", "County", "City", "Date.Local",
+                            "NO2.Mean", "O3.Mean", "SO2.Mean", "CO.Mean")
+                          ]
+head(subset_uspoll)
