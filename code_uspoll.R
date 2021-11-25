@@ -24,9 +24,11 @@ subset_uspoll <- df_uspoll[c("State.Code", "County.Code", "Site.Num", "Address",
 head(subset_uspoll)
 
 # Uncomment to create local csv
-#write.csv(subset_uspoll, "uspoll_onlymeans00-16.csv")
+#write.csv(subset_uspoll, "uspoll_onlymeans00-16.csv")ß
 arizona <- filter(subset_uspoll, subset_uspoll$Site.Num == 3002)
 dim(arizona)
 
 plot1 <-  ggplot(arizona, aes(x=Date.Local, y=NO2.Mean)) + geom_point()
 plot1
+
+#dstsdtvat77dybsay78
