@@ -1,0 +1,199 @@
+rm(list=ls()) # Clear environment
+cat("\014")   # Clear Console
+dev.off()     # Clear plots
+getwd()
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+#check that the filename is correct
+uspoll_fp <- "~/Downloads/pollution_us_2000_2016 2.csv"
+
+df_uspoll <- read.csv("~/Downloads/pollution_us_2000_2016 2.csv")
+df_uspoll <- read.csv(uspoll_fp, sep = ",", header = 1)
+
+# Col information
+str(df_uspoll)
+head(df_uspoll)
+
+
+# Creating a subset for dataframe with only necessary columns
+
+subset_uspoll <- df_uspoll[c("State.Code", "County.Code", "Site.Num", "Address",
+                             "State", "County", "City", "Date.Local",
+                             "NO2.Mean", "O3.Mean", "SO2.Mean", "CO.Mean")
+]
+head(subset_uspoll)                          
+clean <- drop_na(subset_uspoll)
+clean
+
+str(clean)
+summary(clean)
+
+clean<-clean %>%
+  group_by(State,Date.Local)%>%
+  summarise(NO2.Mean = mean(NO2.Mean),O3.Mean= mean(O3.Mean),SO2.Mean= mean(SO2.Mean),CO.Mean= mean(CO.Mean))
+clean
+clean =clean %>%
+  group_by(State)
+clean
+
+library(dplyr)
+library(lubridate)
+installed.packages("lubridate")
+clean<-clean%>%
+  mutate(month = month(Date.Local), year= year(Date.Local))%>%
+  group_by(State, year, month)%>%
+  summarize(NO2.Mean = mean(NO2.Mean),O3.Mean= mean(O3.Mean),SO2.Mean= mean(SO2.Mean),CO.Mean= mean(CO.Mean))
+clean
+
+
+
+clean =clean %>%
+  group_by(Date.Local)%>%
+  summarise(NO2.Mean= sum(NO2.Mean),O3.Mean= sum(O3.Mean),SO2.Mean= sum(SO2.Mean),CO.Mean= sum(CO.Mean)
+            clean
+
+clean$Date.Local <- as.Date(subset_uspoll$Date.Local)
+Date.Local<- data.frame(year = as.numeric(format(clean$Date.Local, format = "%Y")),
+                 month = as.numeric(format(clean$Date.Local, format = "%m")),
+                 day = as.numeric(format(clean$Date.Local, format = "%d")))
+
+
+set.seed(1000)
+row.number <- sample(1:nrow(clean), 0.8*nrow(clean))
+train = clean[row.number,]
+test = clean[-row.number,]
+dim(train)
+dim(test)
+
+#NO2
+m0 <- lm(NO2.Mean~1, data=clean)                     
+result0 <- summary(m0)                  
+result0
+result0$r.squared                                       ### R2
+result0$adj.r.squared                                   ### adjusted R2
+result0$coefficients                                    ### coefficients
+result0$sigma   
+
+#O3
+m1 <- lm(O3.Mean~1, data=clean)                     
+result1 <- summary(m1)                    
+result1
+result1$r.squared                                       
+result1$adj.r.squared                                   
+result1$coefficients                                    
+result1$sigma   
+#SO2
+m2 <- lm(SO2.Mean~1, data=clean)                     
+result2 <- summary(m2)                    
+result2
+result2$r.squared                                       
+result2$adj.r.squared                                   
+result2$coefficients                                    
+result2$sigma   
+#CO
+m3 <- lm(CO.Mean~1, data=clean)         
+result3 <- summary(m3)                    
+result3
+result3$r.squared                                       
+result3$adj.r.squared                                   
+result3$coefficients                                  
+result3$sigma   
+
+### From m0 we get RSS_r (TSS)
+RSS_r = sum(result0$residuals^2)                        
+RSS_r
+
+TSS = sum((clean$NO2.Mean - mean(clean$NO2.Mean))^2) 
+TSS 
+
+### From m1 we get RSS_r (TSS)
+RSS_r = sum(result1$residuals^2)                        
+RSS_r
+
+TSS = sum((clean$O3.Mean - mean(clean$O3.Mean))^2) 
+TSS 
+
+### From m2 we get RSS_r (TSS)
+RSS_r = sum(result2$residuals^2)                        
+RSS_r
+
+TSS = sum((clean$SO2.Mean - mean(clean$SO2.Mean))^2) 
+TSS 
+### From m2 we get RSS_r (TSS)
+RSS_r = sum(result3$residuals^2)                        
+RSS_r
+
+TSS = sum((clean$CO.Mean - mean(clean$CO.Mean))^2) 
+TSS 
+
+# Regression 1: regress NO2 (Y) on State
+model_1 <- lm(NO2.Mean~State, data=clean)
+result_4 <- summary(model_1)                                  
+coef1   <- result_4$coefficients                         
+coef1
+coef1[,1]                                              
+coef1[,'Estimate']                                     
+
+coef1[,3]                                               
+coef1[,'t value']                                      
+
+coef1[,4]                                               
+coef1[,'Pr(>|t|)']
+
+model_1$predicted.y <- predict.lm(model_1, newdata=clean)
+model_1$predicted.y
+
+# Regression 1: regress NO2 (Y) on State
+model_2 <- lm(year~NO2.Mean + O3.Mean +SO2.Mean + CO.Mean, data=clean)
+result_5 <- summary(model_2)                                  
+coef1   <- result_5$coefficients                         
+coef1
+coef1[,1]                                              
+coef1[,'Estimate']                                     
+
+coef1[,3]                                               
+coef1[,'t value']                                      
+
+coef1[,4]                                               
+coef1[,'Pr(>|t|)']
+
+ 
+
+
+
+
+
+
+
+
+
+
+clean.plot <- ggplot(clean$, aes(x=clean$year, y=clean$NO2.Mean)) +
+  geom_point()
+clean.plot
+
+
+State.lm<-lm(State ~ NO2.Mean + O3.Mean+ SO2.Mea n+ CO.Mean, data = clean)
+summary(State.lm)
+
+
+#turning State into a factor:
+State_m<- filter(clean, clean$State==3033)
+dim(State_m)
+clean$State <- as.factor(clean$State)
+clean.plot <- ggplot(clean$State.Code, aes(x=clean$year, y=clean$NO2.Mean)) +
+  geom_point()
+clean.plot
+
+
+plot(clean$NO2.Mean,clean$State,col='cyan', pch=10)          
+abline(lm(clean$NO2.Mean~clean$State), col='red', lwd=1)
+abline(a=10,b=1.5)                                                     
+
+x=plot(clean$NO2.Mean,clean$State,                              
+     main="Relationship of NO2.mean and State",
+     ylab="NO2", xlab="State",
+     pch=16, col="pink") 
+x
+abline(lm(clean$NO2.Mean~clean$State), col='blue', lwd=1)
